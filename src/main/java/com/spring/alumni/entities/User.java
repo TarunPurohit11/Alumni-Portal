@@ -1,6 +1,7 @@
 package com.spring.alumni.entities;
 
 import com.spring.alumni.entities.type.AuthProviderType;
+import com.spring.alumni.entities.type.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,8 @@ public class User implements UserDetails {
     private String username;
 
     private String password;
+
+    private Role role;
 
     private String providerId;
     @Enumerated(EnumType.STRING)

@@ -1,0 +1,28 @@
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          linkedin:
+            authorization-uri: https://www.linkedin.com/oauth/v2/authorization
+            token-uri: https://www.linkedin.com/oauth/v2/accessToken
+            user-info-uri: https://api.linkedin.com/v2/userinfo
+            jwk-set-uri: https://www.linkedin.com/oauth/openid/jwks
+            user-name-attribute: sub
+        registration:
+          linkedin:
+            client-id: 86bqb1n19evbcn
+            client-secret: WPL_AP1.R9hWaRLiegziD4WU.kI+ReA==
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/linkedin
+            client-authentication-method: client_secret_post
+            scope: openid, profile, email, w_member_social
+            client-name: LinkedIn
+            provider: linkedin
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+
+
+
+

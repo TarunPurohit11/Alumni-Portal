@@ -49,6 +49,7 @@ public class AuthUtil {
             case "google" -> AuthProviderType.GOOGLE;
             case "github" -> AuthProviderType.GITHUB;
             case "facebook" -> AuthProviderType.FACEBOOK;
+            case "linkedin" -> AuthProviderType.LINKEDIN;
             default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
         };
     }
@@ -57,6 +58,12 @@ public class AuthUtil {
         String providerId = switch (registrationId.toLowerCase()){
             case "google" -> oAuth2User.getAttribute("sub");
             case "github" -> oAuth2User.getAttribute("id").toString();
+            case "linkedin" -> {
+                String id = oAuth2User.getAttribute("id");
+                if (id == null) id = oAuth2User.getAttribute("sub");
+                yield id;
+            }
+
             default -> {
                 log.error("Unexpected oAuth2 provider: {}", registrationId);
                 throw new IllegalArgumentException("Unable to determine providerId for OAuth2 login");
@@ -78,6 +85,11 @@ public class AuthUtil {
         return switch (registrationId.toLowerCase()){
             case "google" -> oAuth2User.getAttribute("sub");
             case "github" -> oAuth2User.getAttribute("login");
+            case "linkedin" -> {
+                String id = oAuth2User.getAttribute("id");
+                if (id == null) id = oAuth2User.getAttribute("sub");
+                yield id;
+            }
 
             default -> providerId;
         };

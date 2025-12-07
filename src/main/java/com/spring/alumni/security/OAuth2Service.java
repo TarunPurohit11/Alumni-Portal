@@ -4,8 +4,8 @@ import com.spring.alumni.dtos.LoginResponseDto;
 import com.spring.alumni.dtos.SignupRequestDto;
 import com.spring.alumni.entities.User;
 import com.spring.alumni.entities.type.AuthProviderType;
+import com.spring.alumni.entities.type.Role;
 import com.spring.alumni.repositories.UserRepository;
-import com.spring.alumni.services.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +65,12 @@ public class OAuth2Service {
                 .providerType(authProviderType)
                 .providerId(providerId)
                 .build());
+        if(authProviderType == AuthProviderType.GOOGLE){
+            user.setRole(Role.STUDENT);
+        } else if (authProviderType == AuthProviderType.LINKEDIN) {
+            user.setRole(Role.ALUMNI);
+        }
 
-        return user;
+        return userRepository.save(user);
     }
 }

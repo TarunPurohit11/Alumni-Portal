@@ -6,17 +6,14 @@ import com.spring.alumni.dtos.SignupRequestDto;
 import com.spring.alumni.dtos.SignupResponseDto;
 import com.spring.alumni.entities.User;
 import com.spring.alumni.entities.type.AuthProviderType;
+import com.spring.alumni.entities.type.Role;
 import com.spring.alumni.repositories.UserRepository;
 import com.spring.alumni.security.AuthUtil;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,6 +44,7 @@ public class AuthService {
                 .username(signupRequestDto.getUsername())
                 .providerType(AuthProviderType.EMAIL)
                 .providerId(null)
+                        .role(Role.STUDENT)
                 .build());
 
         return new SignupResponseDto(user.getId(),user.getUsername());
