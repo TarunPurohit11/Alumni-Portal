@@ -11,8 +11,8 @@ spring:
             user-name-attribute: sub
         registration:
           linkedin:
-            client-id: 86bqb1n19evbcn
-            client-secret: WPL_AP1.R9hWaRLiegziD4WU.kI+ReA==
+            client-id: {LINKEDIN_CLIENT_ID}
+            client-secret: {LINKEDIN_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/linkedin
             client-authentication-method: client_secret_post
