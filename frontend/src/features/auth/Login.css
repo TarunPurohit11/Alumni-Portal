@@ -1,0 +1,89 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(120deg, #004aad, #0077ff);
+}
+
+.login-card {
+  background-color: white;
+  padding: 40px 35px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  width: 350px;
+  text-align: center;
+}
+
+.login-card h2 {
+  color: #004aad;
+  margin-bottom: 10px;
+}
+
+.role-toggle {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.role-toggle button {
+  flex: 1;
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px;
+  margin: 0 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.role-toggle button.active {
+  background-color: #004aad;
+  color: white;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  background-color: #004aad;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background-color: #0066ff;
+}
+
+.linkedin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #0077b5;
+  color: white;
+}
+
+.linkedin-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+}

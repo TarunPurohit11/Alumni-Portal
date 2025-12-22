@@ -1,0 +1,14 @@
+.hero-bg {
+  background-image: url("../../assets/hero-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 420px;
+}
+
+.landing-wrapper {
+  font-family: 'Inter', sans-serif;
+}
+
+.highlight-card img {
+  border-bottom: 1px solid #ddd;
+}

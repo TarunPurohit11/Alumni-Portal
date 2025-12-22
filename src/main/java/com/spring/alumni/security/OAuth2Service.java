@@ -22,36 +22,34 @@ public class OAuth2Service {
 
     @Transactional
     public ResponseEntity<LoginResponseDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
-//        fetch providerType and providerId
+
         AuthProviderType providerType = authUtil.getProviderTypeFromRegistrationId(registrationId);
-        String providerId = authUtil.determineProviderIdFromOAuth2User(oAuth2User,registrationId);
+        String providerId = authUtil.determineProviderIdFromOAuth2User(oAuth2User, registrationId);
 
-        User user = userRepository.findByProviderIdAndProviderType(providerId,providerType).orElse(null);
-
+        User user = userRepository.findByProviderIdAndProviderType(providerId, providerType).orElse(null);
         String email = oAuth2User.getAttribute("email");
-
         User emailUser = userRepository.findByUsername(email).orElse(null);
 
-        if(user == null && emailUser == null){
-//            signup flow
-            String username = authUtil.determineUsernameFromOAuth2User(oAuth2User,registrationId,providerId);
-
-            user = oAuth2Signup(new SignupRequestDto(username,null),providerType,providerId);
+        if (user == null && emailUser == null) {
+            String username = authUtil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
+            user = oAuth2Signup(new SignupRequestDto(username, null), providerType, providerId);
         } else if (user != null) {
-            if(email != null && !email.isBlank() && !email.equals(user.getUsername())) {
+            if (email != null && !email.isBlank() && !email.equals(user.getUsername())) {
                 user.setUsername(email);
                 userRepository.save(user);
             }
         } else {
-            throw new BadCredentialsException("This email is already registered with provider "+ emailUser.getProviderType());
+            throw new BadCredentialsException("This email is already registered with provider " + emailUser.getProviderType());
         }
 
-        LoginResponseDto loginResponseDto = new LoginResponseDto(authUtil.generateAccessToken(user), user.getId());
-        return ResponseEntity.ok(loginResponseDto);
+        // FIX: include role
+        LoginResponseDto loginResponseDto = new LoginResponseDto(
+                authUtil.generateAccessToken(user),
+                user.getId(),
+                user.getRole().name()
+        );
 
-//        save the providerType and providerId info with the user
-//        if the user has an account: directly login
-//        otherwise: final signup and then login
+        return ResponseEntity.ok(loginResponseDto);
     }
 
     public User oAuth2Signup(SignupRequestDto signupRequestDto, AuthProviderType authProviderType, String providerId){

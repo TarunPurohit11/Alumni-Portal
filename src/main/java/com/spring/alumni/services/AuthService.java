@@ -15,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 @Service
 @AllArgsConstructor
 public class AuthService {
@@ -23,20 +22,29 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final AuthUtil authUtil;
     private final PasswordEncoder passwordEncoder;
-    public LoginResponseDto login(LoginRequestDto loginRequestDto){
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),loginRequestDto.getPassword())
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDto.getUsername(),
+                        loginRequestDto.getPassword()
+                )
         );
+
         User user = (User) authentication.getPrincipal();
         String token = authUtil.generateAccessToken(user);
 
-        return new LoginResponseDto(token,user.getId());
+        return new LoginResponseDto(
+                token,
+                user.getId(),
+                user.getRole().name()    // ⭐⭐ REQUIRED
+        );
     }
 
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto){
+    public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
         User user = userRepository.findByUsername(signupRequestDto.getUsername()).orElse(null);
-        if(user != null){
+        if (user != null) {
             throw new IllegalArgumentException("Username already exists");
         }
 
@@ -44,10 +52,12 @@ public class AuthService {
                 .username(signupRequestDto.getUsername())
                 .providerType(AuthProviderType.EMAIL)
                 .providerId(null)
-                        .role(Role.STUDENT)
+                .role(Role.STUDENT)          // default student role
                 .build());
 
-        return new SignupResponseDto(user.getId(),user.getUsername());
+        return new SignupResponseDto(
+                user.getId(),
+                user.getUsername()
+        );
     }
-
 }

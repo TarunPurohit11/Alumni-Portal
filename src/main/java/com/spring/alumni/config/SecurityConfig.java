@@ -14,11 +14,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -34,27 +39,35 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
 
         httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(sessionConfig -> sessionConfig
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/events/**").permitAll()
+                        .requestMatchers("/api/announcements/**").permitAll()
+                        .requestMatchers("/api/groups/all").permitAll()
+                        .requestMatchers("/alumniDirectory/page").permitAll()
+                        .requestMatchers("/api/alumni/public/**").permitAll()
+                        .requestMatchers("/api/messages/**").authenticated()
+                        .requestMatchers("/ws-chat/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .oauth2Login(oAuth2 -> oAuth2
-//                        .failureHandler(
-//                                (request, response, exception) ->
-//                                    log.error("oAuth2 error", exception)
-//                        ).successHandler(oAuth2SuccessHandler)
-//
-//                );
+
                 .oauth2Login(oauthLoginConfig -> oauthLoginConfig
                         .authorizationEndpoint((authorizationEndpointConfig ->
                                 authorizationEndpointConfig.authorizationRequestResolver(
                                         requestResolver(clientRegistrationRepository) // See this.
-                                ))
-                        ).successHandler(oAuth2SuccessHandler));
+                                ).authorizationRequestRepository(authRequestRepository()))
+                        ).successHandler(oAuth2SuccessHandler)
+                        .failureHandler(
+                                (request, response, exception) ->
+                                        log.error("oAuth2 error", exception))
+                );
         return httpSecurity.build();
 
     }
@@ -98,4 +111,24 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+    @Bean
+    public HttpSessionOAuth2AuthorizationRequestRepository authRequestRepository() {
+        return new HttpSessionOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET","PUT","DELETE","POST","OPTIONS"));
+
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+
 }
